@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Plugin;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Plugin;
 
 use Magento\Catalog\Controller\Category\View;
 use Magento\Framework\View\Result\Page;
-use Shellpea\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
+use Magexperts\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
 
 class AfterCategoryView
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Model;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Model;
 
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Framework\App\Http\Context;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Block;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Block;
 
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -10,16 +10,16 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Layout;
 use Smile\ElasticsuiteCatalog\Model\ResourceModel\Product\Fulltext\Collection;
 use Smile\ElasticsuiteCatalog\Block\Navigation;
-use Shellpea\AdvancedElasticsuiteCatalog\Provider\Config;
+use Magexperts\AdvancedElasticsuiteCatalog\Provider\Config;
 use Magento\Catalog\Model\Layer\Filter\Item as FilterItem;
 use Smile\ElasticsuiteSwatches\Helper\Swatches;
 use Magento\Swatches\Helper\Media;
-use Shellpea\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
+use Magexperts\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
 
 /**
  * Class AdvancedCatalog
  *
- * @package Shellpea\AdvancedElasticsuiteCatalog\Block
+ * @package Magexperts\AdvancedElasticsuiteCatalog\Block
  */
 class AdvancedCatalog extends Template
 {

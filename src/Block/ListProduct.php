@@ -1,9 +1,9 @@
 <?php
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Block;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Block;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Shellpea\AdvancedElasticsuiteCatalog\Provider\Config;
+use Magexperts\AdvancedElasticsuiteCatalog\Provider\Config;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Model\Layer\Resolver;
 use Magento\Framework\Data\Helper\PostHelper;

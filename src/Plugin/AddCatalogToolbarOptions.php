@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Plugin;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Plugin;
 
 use Magento\Catalog\Block\Product\ProductList\Toolbar;
 use Magento\Framework\Serialize\Serializer\Json;
-use Shellpea\AdvancedElasticsuiteCatalog\Provider\Config;
+use Magexperts\AdvancedElasticsuiteCatalog\Provider\Config;
 
 class AddCatalogToolbarOptions
 {

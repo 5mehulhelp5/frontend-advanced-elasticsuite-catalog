@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Provider;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Provider;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Plugin;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Plugin;
 
 use Magento\Framework\App\Http\Context;
 use Magento\Framework\App\PageCache\Identifier;

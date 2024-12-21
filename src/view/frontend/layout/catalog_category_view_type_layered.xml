@@ -11,7 +11,7 @@
                 />
             </referenceBlock>
             <container name="category.list.view" htmlTag="div" htmlClass="category-list-view" />
-            <block class="Shellpea\AdvancedElasticsuiteCatalog\Block\AdvancedCatalog"
+            <block class="Magexperts\AdvancedElasticsuiteCatalog\Block\AdvancedCatalog"
                    name="shellpea.elastic.navigation"
                    template="Magexperts_AdvancedElasticsuiteCatalog::configuration.phtml"
                    ifconfig="smile_advanced_elasticsuite_catalog/general/active" />
@@ -54,7 +54,7 @@
                                template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/js/slider-filter-js.phtml">
                         </block>
                     </block>
-					<block class="Shellpea\AdvancedElasticsuiteCatalog\Block\Swatches\Swatches"
+					<block class="Magexperts\AdvancedElasticsuiteCatalog\Block\Swatches\Swatches"
                            name="catalog.navigation.renderer.swatches" />	  					   
                 </block>
             </block>

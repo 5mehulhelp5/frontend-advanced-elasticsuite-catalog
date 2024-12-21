@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Block\Swatches;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Block\Swatches;
 
 use Magento\Catalog\Model\Layer\Filter\Item as FilterItem;
 use Magento\Eav\Model\Entity\Attribute\Option;

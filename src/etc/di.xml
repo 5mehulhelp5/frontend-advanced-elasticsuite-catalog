@@ -5,8 +5,8 @@
     </type>
     <preference
         for="Magento\Catalog\Block\Product\ListProduct"
-        type="Shellpea\AdvancedElasticsuiteCatalog\Block\ListProduct" />
+        type="Magexperts\AdvancedElasticsuiteCatalog\Block\ListProduct" />
     <preference
         for="Smile\ElasticsuiteSwatches\Block\Navigation\Renderer\Swatches\RenderLayered"
-        type="Shellpea\AdvancedElasticsuiteCatalog\Block\Swatches\RenderLayered" />
+        type="Magexperts\AdvancedElasticsuiteCatalog\Block\Swatches\RenderLayered" />
 </config>

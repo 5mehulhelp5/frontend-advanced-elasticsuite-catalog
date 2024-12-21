@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Plugin;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Plugin;
 
 use Magento\CatalogSearch\Controller\Result\Index;
-use Shellpea\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
+use Magexperts\AdvancedElasticsuiteCatalog\Model\AjaxResponse;
 
 class AfterSearchView
 {

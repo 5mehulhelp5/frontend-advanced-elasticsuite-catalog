@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Shellpea\AdvancedElasticsuiteCatalog\Plugin;
+namespace Magexperts\AdvancedElasticsuiteCatalog\Plugin;
 
-use Shellpea\AdvancedElasticsuiteCatalog\Provider\Config;
+use Magexperts\AdvancedElasticsuiteCatalog\Provider\Config;
 use Smile\ElasticsuiteCatalog\Block\Navigation\Renderer\Slider;
 use Magento\Framework\Serialize\Serializer\Json;
 
