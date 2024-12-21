@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var Currency $viewModelCurrency */
+
+
+$uniqueId = $block->getData('unique_id');
+
+
+$isPriceSlider = (strpos($block->getDataRole(), 'price') !== false);
+/* The script block deleted because Alpine doesn't support dynamic components from AJAX Request */
+?>
+
+<span class="sr-only"></span>

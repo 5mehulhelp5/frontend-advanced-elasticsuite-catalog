@@ -1,0 +1,12 @@
+<?php
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+<?php
+$uniqueId = $block->getData('unique_id');
+/* The script block deleted because Alpine doesn't support dynamic components from AJAX Request */
+?>
+<span class="sr-only"></span>

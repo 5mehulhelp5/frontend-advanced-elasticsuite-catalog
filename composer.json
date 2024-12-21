@@ -1,0 +1,29 @@
+{
+  "name": "magexperts/frontend-advanced-elasticsuite-catalog",
+  "description": "Magento 2 module improves ElasticSuite. Adds smart ajax filtering, dynamic product loading. Compatible with Vira Theme",
+  "require": {
+    "smile/elasticsuite": "~2.10.9|~2.11.0"
+  },
+  "authors": [
+    {
+      "name": "Viraxpress Frontend Themes, Magexperts",
+      "email": "5mehulhelp5@gmail.com"
+    },
+    {
+      "name": "Elasticsuite core team",
+      "email": "elasticsuite@smile.fr"
+    }
+  ],
+  "type": "magento2-module",
+  "license": [
+    "OSL-3.0"
+  ],
+  "autoload": {
+    "files": [
+      "src/registration.php"
+    ],
+    "psr-4": {
+      "Magexperts\\AdvancedElasticsuiteCatalog\\": "src/"
+    }
+  }
+}

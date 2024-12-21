@@ -1,0 +1,125 @@
+<?php
+/**
+ * ViraXpress - https://www.viraxpress.com
+ *
+ * LICENSE AGREEMENT
+ *
+ * This file is part of the ViraXpress package and is licensed under the ViraXpress license agreement.
+ * You can view the full license at:
+ * https://www.viraxpress.com/license
+ *
+ * By utilizing this file, you agree to comply with the terms outlined in the ViraXpress license.
+ *
+ * DISCLAIMER
+ *
+ * Modifications to this file are discouraged to ensure seamless upgrades and compatibility with future releases.
+ *
+ * @author      ViraXpress
+ * @copyright   © 2024 ViraXpress (https://www.viraxpress.com/)
+ * @license     https://www.viraxpress.com/license
+ */
+
+// phpcs:disable PSR2.ControlStructures.SwitchDeclaration
+// phpcs:disable Generic.WhiteSpace.ScopeIndent
+
+/** @var $block \Magento\Swatches\Block\LayeredNavigation\RenderLayered */
+/** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+/** @var \Magento\Framework\Escaper $escaper */
+?>
+<?php $config = $block->getLayout()->createBlock(ViraXpress\Catalog\Block\Product\ConfigBlock::class); ?>
+<?php $swatchData = $block->getSwatchData(); ?>
+<div class="swatch-attribute swatch-layered <?= $escaper->escapeHtmlAttr($swatchData['attribute_code']) ?>"
+     data-attribute-code="<?= $escaper->escapeHtmlAttr($swatchData['attribute_code']) ?>"
+     data-attribute-id="<?= $escaper->escapeHtmlAttr($swatchData['attribute_id']) ?>" x-init="configLayeredNavigation()" x-data="{getSwatchType(typeNumber) {
+                switch ('' + typeNumber) {
+                    case '1':
+                        return 'color'
+                    case '2':
+                        return 'image'
+                    case '0':
+                    default:
+                        return 'text'
+                }
+            },
+            getSwatchBackgroundStyle(type, value, image) {
+                if (this.getSwatchType(type) === 'color') {
+                    return 'background-color:' + value;
+                } else if (this.getSwatchType(type) === 'image') {
+                    return `background: #ffffff url('${image}') no-repeat center`
+                } else {
+                    return '';
+                }
+            },
+            activeTooltipItem: false,
+            tooltipPositionElement: false,
+            isTooltipVisible() {
+                return this.activeTooltipItem
+            },
+            isFirstItemCol() {
+                const left = this.tooltipPositionElement.offsetLeft;
+                const leftParent = this.tooltipPositionElement.parentNode.offsetLeft;
+                const width = this.tooltipPositionElement.offsetWidth;
+                return left - leftParent < width;
+            },
+            getTooltipImageStyle() {
+                const type = this.activeTooltipItem.type;
+
+                if (this.getSwatchType(type) === 'color') {
+                    return 'background-color:' + this.activeTooltipItem.value + '; width: 110px; height: 90px;';
+                } else if (this.getSwatchType(type) === 'image') {
+                   return `background: #ffffff url('${this.activeTooltipItem.thumb}') center center no-repeat; width: 110px; height: 90px;`;
+                } else {
+                    return 'display:none';
+                }
+            },
+            getTooltipPosition() {
+                return this.tooltipPositionElement ?
+                    (
+                        `top: ${this.tooltipPositionElement.offsetTop}px;` +
+                        `left: ${this.tooltipPositionElement.offsetLeft}px;`
+                    ) : ''
+            },
+            getTooltipLabel() {
+                return this.activeTooltipItem.label || ''
+            },
+            isVisualSwatch() {
+                return this.getSwatchType(this.activeTooltipItem.type) !== 'text'
+            }}" >
+    <div class="swatch-attribute-options flex justify-start flex-wrap items-start gap-4">
+             <template x-for="swatchItem in $store.category.config.items.filterItems.<?= $swatchData['attribute_code'] . 'Filter' ?>">
+                <a :href="swatchItem.url" @click.prevent="$store.category.updateLayer($event.target.href)" rel="nofollow"
+               :aria-label="swatchItem.label" x-text="swatchItem.swatch[swatchItem.option_id]['type'] !== '0' ? '' : swatchItem.label"
+               class="swatch-option-link-layered swatch-option inline-flex min-w-7 p-1 h-7 shadow-sm rounded border-2 border-gray-400 justify-center items-center bg-gray-200" :style="getSwatchBackgroundStyle(
+                    swatchItem.swatch[swatchItem.option_id]['type'],
+                    swatchItem.swatch[swatchItem.option_id]['value'],
+                    swatchItem.swatch_image
+                )">
+            </a>
+			</template>
+    </div>
+</div>
+
+<script>
+    function configLayeredNavigation() {
+        return {
+            init() {
+                var colorSwatches = document.querySelectorAll('.swatch-colors-options');
+                if (colorSwatches) {
+                    colorSwatches.forEach(function(element) {
+                        var backgroundColor = element.getAttribute('data-option-tooltip-value');
+                        element.style.backgroundColor = backgroundColor;
+                    });
+                }
+
+                var imageSwatches = document.querySelectorAll('.swatch-images-options');
+                if (imageSwatches) {
+                    imageSwatches.forEach(function(element) {
+                        var escapedUrl = element.getAttribute('data-option-swatch-image-url');
+                        element.style.background = "url('" + escapedUrl + "') no-repeat center";
+                        element.style.backgroundSize = "initial";
+                    });
+                }
+            },
+        }
+    }
+</script>

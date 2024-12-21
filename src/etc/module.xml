@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Magexperts_AdvancedElasticsuiteCatalog">
+        <sequence>
+            <module name="Smile_ElasticsuiteCatalog"/>
+            <module name="Smile_ElasticsuiteCore"/>
+            <module name="Smile_ElasticsuiteSwatches"/>
+        </sequence>
+    </module>
+</config>

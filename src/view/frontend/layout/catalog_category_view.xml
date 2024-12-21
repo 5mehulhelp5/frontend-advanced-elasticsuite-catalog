@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+		 <referenceBlock name="category.product.type.details.renderers">
+            <block class="Magento\Swatches\Block\Product\Renderer\Listing\Configurable"
+                   name="category.product.type.details.renderers.configurable" as="configurable"
+                   template="Magexperts_AdvancedElasticsuiteCatalog::swatch/product/listing/renderer.phtml"
+                   ifconfig="catalog/frontend/show_swatches_in_product_list">
+                <arguments>
+                    <argument name="configurable_view_model"
+                              xsi:type="object">Magento\Swatches\ViewModel\Product\Renderer\Configurable</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+        <move element="category.products" destination="category.list.view" />
+
+        <referenceContainer name="content">
+            <referenceBlock class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magexperts_AdvancedElasticsuiteCatalog::product/list/toolbar.phtml">
+                <referenceBlock class="Magento\Theme\Block\Html\Pager"
+                                name="product_list_toolbar_pager"
+                                template="Magexperts_AdvancedElasticsuiteCatalog::pager/pager.phtml"
+                />
+            </referenceBlock>
+            <container name="category.list.view" htmlTag="div" htmlClass="category-list-view" />
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <attribute name="class" value="page-with-filter"/>
+        <referenceContainer name="content">
+            <referenceBlock class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magexperts_AdvancedElasticsuiteCatalog::product/list/toolbar.phtml">
+                <referenceBlock class="Magento\Theme\Block\Html\Pager"
+                                name="product_list_toolbar_pager"
+                                template="Magexperts_AdvancedElasticsuiteCatalog::pager/pager.phtml"
+                />
+            </referenceBlock>
+            <container name="category.list.view" htmlTag="div" htmlClass="category-list-view" />
+            <block class="Shellpea\AdvancedElasticsuiteCatalog\Block\AdvancedCatalog"
+                   name="shellpea.elastic.navigation"
+                   template="Magexperts_AdvancedElasticsuiteCatalog::configuration.phtml"
+                   ifconfig="smile_advanced_elasticsuite_catalog/general/active" />
+        </referenceContainer>
+		<referenceContainer name="sidebar.main">
+            <block class="Magento\LayeredNavigation\Block\Navigation\Category" name="catalog.leftnav" before="-"
+                   template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/view.phtml">
+                <block class="Magento\LayeredNavigation\Block\Navigation\State" name="catalog.navigation.state" as="state" template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/state.phtml" />
+                <block class="Smile\ElasticsuiteCatalog\Block\Navigation\FilterRenderer"
+                       name="catalog.navigation.renderer"
+                       as="renderer">
+
+                    <block class="Smile\ElasticsuiteCatalog\Block\Navigation\Renderer\Attribute"
+                           name="catalogsearch.navigation.renderer.attribute"
+                           template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/attribute.phtml"
+                           after="-">
+                        <block class="Magento\Framework\View\Element\Template"
+                               name="attribute-filter-js"
+                               template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/js/attribute-filter-js.phtml"
+                        />
+                    </block>
+
+                    <block class="Smile\ElasticsuiteCatalog\Block\Navigation\Renderer\Category"
+                           name="catalogsearch.navigation.renderer.category"
+                           template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/default.phtml"/>
+
+                    <block class="Smile\ElasticsuiteCatalog\Block\Navigation\Renderer\Slider"
+                           name="catalog.navigation.renderer.slider"
+                           template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/slider.phtml">
+                        <block class="Magento\Framework\View\Element\Template"
+                               name="renderer.slider"
+                               template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/js/slider-filter-js.phtml"/>
+                    </block>
+
+                    <block class="Smile\ElasticsuiteCatalog\Block\Navigation\Renderer\PriceSlider"
+                           name="catalog.navigation.renderer.price.slider"
+                           template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/slider.phtml">
+                        <block class="Magento\Framework\View\Element\Template"
+                               name="renderer.price.slider"
+                               template="Magexperts_AdvancedElasticsuiteCatalog::catalog/layer/filter/js/slider-filter-js.phtml">
+                        </block>
+                    </block>
+					<block class="Shellpea\AdvancedElasticsuiteCatalog\Block\Swatches\Swatches"
+                           name="catalog.navigation.renderer.swatches" />	  					   
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,435 @@
+<?php
+
+use Magento\Framework\Escaper;
+use Shellpea\AdvancedElasticsuiteCatalog\Block\AdvancedCatalog;
+
+/** @var Escaper $escaper */
+/** @var AdvancedCatalog $block */
+/** @var StoreConfig $storeConfig */
+
+?>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('category', {
+            config: <?= $block->getJsonConfig() ?>,
+            urlParams: new URLSearchParams(decodeURI(window.location.search).replace(/\[(\d*)\]/g, '')),
+            isLoading: false,
+            hasMoreItems: {},
+            get clearUrl() {
+                const { protocol, host, pathname, searchParams } = new URL(window.location.href);
+                const queryParam = searchParams.has('q') ? '?q=' + searchParams.get('q').toString() : '';
+                return protocol + '//' + host + pathname + queryParam;
+            },
+            get current_href() {
+                return window.location.href;
+            },
+            get sentence() {
+                const current = Math.min(
+                    this.config.items.pageSize * this.config.items.curPage,
+                    this.config.items.size
+                );
+
+                return this.generateSentence(current, this.config.items.size);
+            },
+
+            generateSentence(current, total) {
+
+                if (total > this.config.items.pageSize) {
+                    return `<?= __('Items') ?> ${this.config.items.pageSize * (this.config.items.curPage - 1) + 1}-${current} <?= __('of') ?> ${total}`;
+                } else if (total === 1) {
+                    return `1 <?= __('Items') ?>`;
+                } else {
+                    return `${total} <?= __('Items') ?>`;
+                }
+            },
+            get currentUrl() {
+                return this.buildUrl(this.current_href, 'p', parseInt(this.config.items.curPage) + 1);
+            },
+            getSliderFilterValues () {
+                return Array.from(document.querySelectorAll('.filter-content .filter-option'))
+                    .filter(item => item.querySelector('.smile-es-range-slider'))
+                    .map(filterItem => filterItem.dataset.filterName);
+            },
+            getMultipleFilterValues() {
+                return Array.from(document.querySelectorAll('.filter-content .filter-option'))
+                    .map(filterItem => filterItem.dataset.filterName);
+            },
+            async loadActualFilters(response) {
+                const currentFiltersList = this.getMultipleFilterValues();
+                const responseFilters = new DOMParser().parseFromString(response.listFilterOptions, 'text/html');
+                const responseFiltersContent = responseFilters.querySelectorAll('.filter-content .filter-option');
+
+                const filteredListContent = Array.from(responseFiltersContent).filter(item =>
+                    !currentFiltersList.includes(item.dataset.filterName)
+                );
+
+                const filterContent = document.querySelector('.filter-content');
+                filterContent.append(...filteredListContent);
+            },
+            reload() {
+                this.urlParams = this.getDecodedURLSearchParams();
+            },
+
+            getDecodedURLSearchParams() {
+                return new URLSearchParams(
+                    decodeURI(window.location.search).replace(/\[(\d*)\]/g, '')
+                );
+            },
+            buildUrl(url, replaceParam, replaceValue) {
+                if (replaceParam) {
+                    const href = new URL(url);
+                    href.searchParams.set(replaceParam, replaceValue);
+                    return href.toString();
+                }
+                return url;
+            },
+            async updateLayer(url, replaceParam, replaceValue) {
+                this.isLoading = true;
+                try {
+                    const updatedUrl = this.buildUrl(url, replaceParam, replaceValue);
+                    const result = await this.fetchLayerData(updatedUrl);
+                    await this.afterUpdateLayer(result, updatedUrl);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            async fetchLayerData(url) {
+                const response = await fetch(url, {
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    method: 'GET',
+                    mode: 'same-origin',
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Fetch failed');
+                }
+            },
+            async afterUpdateLayer(response, updatedUrl) {
+                try {
+                    updatedUrl = new URL(updatedUrl);
+                    updatedUrl.searchParams.delete('_');
+                    updatedUrl = updatedUrl.toString();
+                    history.pushState({}, document.title, updatedUrl);
+                    this.reload();
+                    this.config.items.filterItems = response.filterItems;
+                    this.config.items.activeFilter = response.activeFilter;
+                    this.config.items.size = response.size;
+                    this.config.items.pageSize = response.pageSize;
+                    this.config.items.curPage = response.curPage;
+                    this.loadActualFilters(response);
+                    const newPagination = new DOMParser().parseFromString(response.productList, 'text/html').querySelector('.toolbar-products-top');
+                    const pagination = document.querySelector('.toolbar-products-top');
+                    if(pagination) {
+                        pagination.replaceWith(newPagination);
+                    }
+					
+					const newPaginationbottom = new DOMParser().parseFromString(response.productList, 'text/html').querySelector('.toolbar-products-bottom');
+                    const paginationbottom = document.querySelector('.toolbar-products-bottom');
+                    if(paginationbottom) {
+                        paginationbottom.replaceWith(newPaginationbottom);
+                    }
+					
+                    const newActiveFilter = new DOMParser().parseFromString(response.activeFilter, 'text/html')
+                        .querySelector('.filter-current');
+                    const activeFilter = document.querySelector('.filter-current');
+                    activeFilter.replaceWith(newActiveFilter);
+                    const newProductList = new DOMParser().parseFromString(response.productList, 'text/html')
+                        .querySelector('#catalog-products').children;
+                    const productList = document.querySelector('#catalog-products');
+                    productList.replaceChildren(...newProductList);
+					
+					const productCard = document.querySelectorAll("body:not(.account) .product-item"); 
+					const observerCallback = (entries, observer) => {
+						entries.forEach((entry, index) => {
+							if (entry.isIntersecting) {
+								setTimeout(() => {
+								  entry.target.classList.add("slide-up");
+								  entry.target.classList.add("activate");
+								}, index * 350); // Incremental delay of 250ms per element
+								
+								// Optionally, unobserve the element after animation
+								observer.unobserve(entry.target);
+							}
+						});
+					};
+					// Options for the observer
+					const observerOptions = {
+						threshold: 0.05
+					};
+
+					// Create an Intersection Observer
+					const observer = new IntersectionObserver(observerCallback, observerOptions);
+					productCard.forEach(product => observer.observe(product));
+					const lazyImages = document.querySelectorAll("img.lazy");
+					const observerLazy = new IntersectionObserver((entries, observer) => {
+						entries.forEach(entry => {
+							if (entry.isIntersecting) {
+								const img = entry.target;
+								img.src = img.dataset.src;
+								img.classList.remove("lazy");
+
+								// Check if the next sibling element exists before removing it
+								setTimeout(() => {
+									const nextSibling = img.nextElementSibling;
+									if (nextSibling) {
+										nextSibling.remove();
+									}
+								}, 100);
+
+								observerLazy.unobserve(img);
+							}
+						});
+					});
+					lazyImages.forEach(img => observerLazy.observe(img));
+					
+                    await this.replaceSliderFilters(response);
+
+                    this.isLoading = false;
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            async loadPage(url) {
+                this.isLoading = true;
+                try {
+                    const updatedUrl = this.processPageUrl(url);
+                    const result = await this.fetchPageData(updatedUrl);
+                    await this.afterPageLoad(result, updatedUrl);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            async loadPageWithPager(url) {
+                this.isLoading = true;
+                try {
+                    const updatedUrl = this.processPageUrl(url);
+                    const result = await this.fetchPageData(updatedUrl);
+                    await this.afterPageLoadPager(result, updatedUrl);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            async fetchPageData(url) {
+                const response = await fetch(url, {
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    method: 'GET',
+                    mode: 'same-origin',
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Fetch failed');
+                }
+            },
+            async afterPageLoad(response, url) {
+                this.isLoading = true;
+                try {
+                    const newUrl = this.processPageUrl(url);
+                    await this.updatePageState(newUrl, response);
+                    await this.replaceProductList(response);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            async afterPageLoadPager(response, url) {
+                this.isLoading = true;
+                try {
+                    const newUrl = this.processPageUrl(url);
+                    await this.updatePageState(newUrl, response);
+                    const newPagination = new DOMParser().parseFromString(response.productList, 'text/html').querySelector('.toolbar-products-bottom');
+                    const pagination = document.querySelector('.toolbar-products-bottom');
+                    if (pagination) {
+                        pagination.replaceWith(newPagination);
+                    }
+					const newPaginationbottom = new DOMParser().parseFromString(response.productList, 'text/html').querySelector('.toolbar-products-bottom');
+                    const paginationbottom = document.querySelector('.toolbar-products-bottom');
+                    if(paginationbottom) {
+                        paginationbottom.replaceWith(newPaginationbottom);
+                    }
+					
+                    const newProductList = new DOMParser().parseFromString(response.productList, 'text/html')
+                        .querySelector('#catalog-products').children;
+                    const productList = document.querySelector('#catalog-products');
+                    productList.replaceChildren(...newProductList);
+					const productCard = document.querySelectorAll("body:not(.account) .product-item"); 
+					const observerCallback = (entries, observer) => {
+						entries.forEach((entry, index) => {
+							if (entry.isIntersecting) {
+								setTimeout(() => {
+								  entry.target.classList.add("slide-up");
+								  entry.target.classList.add("activate");
+								}, index * 350); // Incremental delay of 250ms per element
+								
+								// Optionally, unobserve the element after animation
+								observer.unobserve(entry.target);
+							}
+						});
+					};
+					// Options for the observer
+					const observerOptions = {
+						threshold: 0.05
+					};
+
+					// Create an Intersection Observer
+					const observer = new IntersectionObserver(observerCallback, observerOptions);
+					productCard.forEach(product => observer.observe(product));
+					const lazyImages = document.querySelectorAll("img.lazy");
+					const observerLazy = new IntersectionObserver((entries, observer) => {
+						entries.forEach(entry => {
+							if (entry.isIntersecting) {
+								const img = entry.target;
+								img.src = img.dataset.src;
+								img.classList.remove("lazy");
+
+								// Check if the next sibling element exists before removing it
+								setTimeout(() => {
+									const nextSibling = img.nextElementSibling;
+									if (nextSibling) {
+										nextSibling.remove();
+									}
+								}, 100);
+
+								observerLazy.unobserve(img);
+							}
+						});
+					});
+					lazyImages.forEach(img => observerLazy.observe(img));
+					
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            processPageUrl(url) {
+                const newUrl = new URL(url);
+                newUrl.searchParams.delete('_');
+                return newUrl.toString();
+            },
+            async updatePageState(newUrl, response) {
+                const updatedUrl = new URL(newUrl);
+                updatedUrl.searchParams.delete('_');
+                history.pushState({}, document.title, updatedUrl.toString());
+                this.reload();
+                this.config.items.filterItems = response.filterItems;
+                this.config.items.activeFilter = response.activeFilter;
+                this.config.items.size = response.size;
+                this.config.items.pageSize = response.pageSize;
+                this.config.items.curPage = response.curPage;
+            },
+            async replaceSliderFilters(response) {
+               const sliderItems = this.getSliderFilterValues();
+
+               if (sliderItems.length > 0) {
+
+                const newSlidersContent = new DOMParser().parseFromString(response.listFilterOptions, 'text/html')
+                    .querySelectorAll('.filter-content .filter-option');
+
+                const filteredItems = Array.from(newSlidersContent)
+                    .filter(item => sliderItems.includes(item.dataset.filterName));
+                console.log(filteredItems);
+                filteredItems.map(item => {
+                    const slider = document.querySelector(`[data-filter-name=${item.dataset.filterName}]`)
+                    slider.replaceWith(item);
+                });
+               }
+            },
+            async replaceFilterItems(response) {
+                const currentFiltersList = this.getMultipleFilterValues();
+                console.log(currentFiltersList);
+
+                const newFiltersContent = new DOMParser().parseFromString(response.listFilterOptions, 'text/html')
+                    .querySelectorAll('.filter-content .filter-option');
+
+                const filteredListContent = Array.from(newFiltersContent).filter(item => {
+                    return currentFiltersList.lastIndexOf(item.dataset.filterName) === -1;
+                });
+
+                if (filteredListContent.length > 0) {
+                    const filterContent = document.querySelector('.filter-content');
+                    filterContent.append(...filteredListContent);
+                }
+            },
+            async replaceActiveFilter(response) {
+                const newActiveFilter = new DOMParser().parseFromString(response.activeFilter, 'text/html')
+                    .querySelector('.filter-current');
+
+                const activeFilter = document.querySelector('.filter-current');
+                activeFilter.replaceWith(newActiveFilter);
+            },
+            async replaceProductList(response) {
+                const newProductList = new DOMParser().parseFromString(response.productList, 'text/html')
+                    .querySelector('#catalog-products').children;
+
+                const productList = document.querySelector('#catalog-products');
+                productList.append(...newProductList);
+				const productCard = document.querySelectorAll("body:not(.account) .product-item"); 
+					const observerCallback = (entries, observer) => {
+						entries.forEach((entry, index) => {
+							if (entry.isIntersecting) {
+								setTimeout(() => {
+								  entry.target.classList.add("slide-up");
+								  entry.target.classList.add("activate");
+								}, index * 350); // Incremental delay of 250ms per element
+								
+								// Optionally, unobserve the element after animation
+								observer.unobserve(entry.target);
+							}
+						});
+					};
+					// Options for the observer
+					const observerOptions = {
+						threshold: 0.05
+					};
+
+					// Create an Intersection Observer
+					const observer = new IntersectionObserver(observerCallback, observerOptions);
+					productCard.forEach(product => observer.observe(product));
+					const lazyImages = document.querySelectorAll("img.lazy");
+					const observerLazy = new IntersectionObserver((entries, observer) => {
+						entries.forEach(entry => {
+							if (entry.isIntersecting) {
+								const img = entry.target;
+								img.src = img.dataset.src;
+								img.classList.remove("lazy");
+
+								// Check if the next sibling element exists before removing it
+								setTimeout(() => {
+									const nextSibling = img.nextElementSibling;
+									if (nextSibling) {
+										nextSibling.remove();
+									}
+								}, 100);
+
+								observerLazy.unobserve(img);
+							}
+						});
+					});
+					lazyImages.forEach(img => observerLazy.observe(img));
+            },
+
+        })
+    })
+</script>
